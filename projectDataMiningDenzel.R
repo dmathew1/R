@@ -36,7 +36,7 @@ myC45predict <- function(fit){
   predictions <- predict(fit,testData)
   data <- summary(fit,newdata=testData,class=TRUE)
   stuff <- confusionMatrix(predictions, testData$Species)
-  return(stuff)
+  return(data)
 }
 
 myIrisRIPPER <- function(){
@@ -62,7 +62,14 @@ myIrisObliquePrediction <- function(fit){
 myIrisNaiveBayes <- function(){
   dataset <- divideDataSet(iris)$train
   fit <- naiveBayes(Species~.,dataset)
-  myC45predict(fit)
+  myIrisNaiveBayesPrediction(fit)
+}
+
+myIrisNaiveBayesPrediction <- function(fit){
+  testData <- divideDataSet(iris)$test
+  predictions <- predict(fit,testData)
+  stuff <- confusionMatrix(predictions, testData$Species)
+  return(data)
 }
 
 myIrisKnn <- function(){
@@ -83,7 +90,6 @@ myLE.C45 <- function(){
 
 
 myLE.C45Predict <- function(fit){
-  library(RWeka)
   testData <- divideDataSet(lifeExp)$test
   predictions <- predict(fit,testData)
   stuff <- confusionMatrix(predictions, testData$Continent)
@@ -113,9 +119,8 @@ myLE.naiveBayes <- function(){
 
 myLE.naiveBayesPrediction <- function(fit){
   testData <- divideDataSet(lifeExp)$test
-  predictions <- predict(fit,dataset)
+  predictions <- predict(fit,testData)
   stuff <- confusionMatrix(predictions, testData$Continent)
-  summary(fit,newdata=dataset,class=TRUE)
   return(stuff)
 }
 
