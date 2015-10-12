@@ -3,8 +3,17 @@ library(caret)
 library(oblique.tree)
 library(e1071)
 
+#Make sure the following packages are installed:
+# 1. RWeka
+# 2. caret
+# 3. oblique.tree
+# 4. e1071
+# 5. BradleyTerry2
 
+
+#LifeExpectancy variable
 lifeExp <- read.csv("C:\\Users\\Denzel\\Desktop\\life_expectancy.csv")
+
 
 #### Partitions the dataset into training and test data sets ######
 divideDataSet <- function(orgData){
@@ -16,17 +25,18 @@ divideDataSet <- function(orgData){
 }
 
 #################### IRIS FUNCTIONS #########################
-myC45 <- function(orgData){
-  dataset <- divideDataSet(orgData)$train
+myIrisC45 <- function(){
+  dataset <- divideDataSet(iris)$train
   fit <- J48(Species~.,data=dataset)
-  myC45predict(fit,orgData)
+  myC45predict(fit)
 }
 
 myC45predict <- function(fit){
   testData <- divideDataSet(iris)$test
   predictions <- predict(fit,testData)
   data <- summary(fit,newdata=testData,class=TRUE)
-  return(data)
+  stuff <- confusionMatrix(predictions, testData$Species)
+  return(stuff)
 }
 
 myIrisRIPPER <- function(){
@@ -39,10 +49,17 @@ myIrisRIPPER <- function(){
 myIrisOblique <- function(){
   dataset <- divideDataSet(iris)$train
   fit <- oblique.tree(Species~.,dataset,oblique.splits = "only")
-  myC45predict(fit)
+  myIrisObliquePrediction(fit)
 }
 
-myNaiveBayes <- function(){
+myIrisObliquePrediction <- function(fit){
+  testData <- divideDataSet(iris)$test
+  predictions <- predict(fit,testData)
+  data <- summary(fit,newdata=testData,class=TRUE)
+  return(data)
+}
+
+myIrisNaiveBayes <- function(){
   dataset <- divideDataSet(iris)$train
   fit <- naiveBayes(Species~.,dataset)
   myC45predict(fit)
