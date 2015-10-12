@@ -1,63 +1,64 @@
+library(RWeka)
+library(caret)
+library(oblique.tree)
+library(e1071)
+
+
+lifeExp <- read.csv("C:\\Users\\Denzel\\Desktop\\life_expectancy.csv")
+
 #### Partitions the dataset into training and test data sets ######
 divideDataSet <- function(orgData){
-  set.seed(6542)
+  set.seed(1618)
   testData <- orgData[sample(nrow(orgData),size=nrow(orgData)*0.2, replace = FALSE),]
   trainData <- orgData[sample(nrow(orgData),size=nrow(orgData)*0.8,replace = FALSE),]
   my_data <- list("train" = trainData, "test" = testData)
   return(my_data)
 }
 
-### myC45 function for iris####
+#################### IRIS FUNCTIONS #########################
 myC45 <- function(orgData){
-  library(RWeka)
   dataset <- divideDataSet(orgData)$train
   fit <- J48(Species~.,data=dataset)
   myC45predict(fit,orgData)
 }
 
-### my c45 predict function for iris ###
-myC45predict <- function(fit,orgData){
-  library(RWeka)
+myC45predict <- function(fit){
   testData <- divideDataSet(iris)$test
   predictions <- predict(fit,testData)
-  summary(fit,newdata=testData,class=TRUE)
-  #results <- list("predictions" = predictions, "Summary" = summary)
+  data <- summary(fit,newdata=testData,class=TRUE)
+  return(data)
 }
 
-#### my iris RIPPER  ######
 myIrisRIPPER <- function(){
-  library(RWeka)
   dataset <- divideDataSet(iris)$train
   JRipFit <- JRip(Species~.,dataset)
   myC45predict(JRipFit)
 }
 
 
-### My Iris Oblique #####
 myIrisOblique <- function(){
-  library(oblique.tree)
   dataset <- divideDataSet(iris)$train
-  ObliqueShit <- oblique.tree(Species~.,dataset)
-  myC45predict(ObliqueShit)
+  fit <- oblique.tree(Species~.,dataset,oblique.splits = "only")
+  myC45predict(fit)
 }
 
-### My Iris Naive Bayes ####
 myNaiveBayes <- function(){
-  library(e1071)
   dataset <- divideDataSet(iris)$train
-  naiveShit <- naiveBayes(Species~.,dataset)
-  myC45predict(naiveShit)
+  fit <- naiveBayes(Species~.,dataset)
+  myC45predict(fit)
+}
+
+myIrisKnn <- function(){
+  dataset <- divideDataSet(iris)$train
+  fit <- IBk(Species~.,dataset)
+  myC45predict(fit)
 }
 
 
-#### reading in csv for life expectancy ####
 
-### my life expectancy ###
+######## My Life Expectancy ########
 
-### myC45 function for iris####
 myLE.C45 <- function(){
-  lifeExp <- read.csv("C:\\Users\\Denzel\\Desktop\\life_expectancy.csv")
-  library(RWeka)
   dataset <- divideDataSet(lifeExp)$train
   fit <- J48(dataset$Continent~.,data=dataset)
   myLE.C45Predict(fit)
@@ -65,12 +66,51 @@ myLE.C45 <- function(){
 
 
 myLE.C45Predict <- function(fit){
-  lifeExp <- read.csv("C:\\Users\\Denzel\\Desktop\\life_expectancy.csv")
   library(RWeka)
   testData <- divideDataSet(lifeExp)$test
   predictions <- predict(fit,testData)
-  predictions
-  summary(fit)
-  #results <- list("predictions" = predictions, "Summary" = summary)
+  stuff <- confusionMatrix(predictions, testData$Continent)
+  return(stuff)
 }
 
+myLE.RIPPER <- function(){
+  dataset <- divideDataSet(lifeExp)$train
+  fit <- JRip(dataset$Continent~.,data=dataset)
+  myLE.C45Predict(fit)
+}
+
+myLE.Oblique <- function(){
+  dataset <- divideDataSet(lifeExp)$train
+  testData <- divideDataSet(lifeExp)$test
+  fit <- oblique.tree(formula=Continent~., data=dataset[,3:8], oblique.splits="only")
+  predictions <- predict(fit, testData[,3:8], type="class")
+  stuff <- confusionMatrix(predictions, testData$Continent)
+  return(stuff)
+}
+
+myLE.naiveBayes <- function(){
+  dataset <- divideDataSet(lifeExp)$train
+  fit <- naiveBayes(Continent~.,dataset)
+  myLE.naiveBayesPrediction(fit)
+}
+
+myLE.naiveBayesPrediction <- function(fit){
+  testData <- divideDataSet(lifeExp)$test
+  predictions <- predict(fit,dataset)
+  stuff <- confusionMatrix(predictions, testData$Continent)
+  summary(fit,newdata=dataset,class=TRUE)
+  return(stuff)
+}
+
+myLE.knn <- function(){
+  dataset <- divideDataSet(lifeExp)$train
+  fit <- IBk(Continent~.,dataset)
+  myLE.C45Predict(fit)
+}
+
+removal <- function(){
+  detach("package:RWeka",unload=TRUE)
+  detach("package:caret",unload=TRUE)
+  detach("package:oblique.tree",unload=TRUE)
+  detach("package:e1071",unload=TRUE)
+}
