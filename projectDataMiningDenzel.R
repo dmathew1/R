@@ -1,6 +1,3 @@
-
-
-
 #### Partitions the dataset into training and test data sets ######
 divideDataSet <- function(orgData){
   set.seed(6542)
@@ -11,20 +8,20 @@ divideDataSet <- function(orgData){
 }
 
 ### myC45 function for iris####
-myIrisC45 <- function(){
+myC45 <- function(orgData){
   library(RWeka)
-  dataset <- divideDataSet(iris)$train
+  dataset <- divideDataSet(orgData)$train
   fit <- J48(Species~.,data=dataset)
-  myC45predict(fit)
+  myC45predict(fit,orgData)
 }
 
 ### my c45 predict function for iris ###
-myC45predict <- function(fit){
+myC45predict <- function(fit,orgData){
   library(RWeka)
   testData <- divideDataSet(iris)$test
   predictions <- predict(fit,testData)
   summary(fit,newdata=testData,class=TRUE)
-  #table(predictions)
+  #results <- list("predictions" = predictions, "Summary" = summary)
 }
 
 #### my iris RIPPER  ######
@@ -53,4 +50,27 @@ myNaiveBayes <- function(){
 }
 
 
+#### reading in csv for life expectancy ####
+
+### my life expectancy ###
+
+### myC45 function for iris####
+myLE.C45 <- function(){
+  lifeExp <- read.csv("C:\\Users\\Denzel\\Desktop\\life_expectancy.csv")
+  library(RWeka)
+  dataset <- divideDataSet(lifeExp)$train
+  fit <- J48(dataset$Continent~.,data=dataset)
+  myLE.C45Predict(fit)
+}
+
+
+myLE.C45Predict <- function(fit){
+  lifeExp <- read.csv("C:\\Users\\Denzel\\Desktop\\life_expectancy.csv")
+  library(RWeka)
+  testData <- divideDataSet(lifeExp)$test
+  predictions <- predict(fit,testData)
+  predictions
+  summary(fit)
+  #results <- list("predictions" = predictions, "Summary" = summary)
+}
 
