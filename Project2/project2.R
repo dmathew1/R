@@ -3,7 +3,7 @@ library(arules)
 ###### Read in Datasets #########
 titanic <- read.csv("C://Users//Denzel//Desktop//DataMining//Project2//titanic.csv")
 retail  <- read.csv("C://Users//Denzel//Desktop//DataMining//Project2//retail.csv")
-GoT     <- read.csv("C://Users//Denzel//Desktop//DataMining//Project2//game_of_thrones.csv")
+GoT     <- read.csv("C://Users//Denzel//Desktop//DataMining//Project2//Game_of_Thrones.csv")
 
 
 ######  List all rules   #########
@@ -22,7 +22,7 @@ titanic_filtered <- apriori(titanic,parameter=list(support=0.01,confidence=0.9),
 subset.matrix <- is.subset(titanic_filtered,titanic_filtered)
 subset.matrix[lower.tri(subset.matrix,diag=T)] <- NA
 redundant <- colSums(subset.matrix,na.rm=T) >= 1
-rules <- titanic_filtered[!redundant]
+titanic_rules <- titanic_filtered[!redundant]
 
 retailFunc <- function(){
 #######   Retail PreProcessing  #############
@@ -53,20 +53,28 @@ return(inspect(retail_rules))
 
 
 
-
-
-
-
-
-
-
 ####### Game of Thrones ########
 
+#######   GoT PreProcessing  #############
+GoT <- GoT[,-1,drop=FALSE]
+GoT$House <- as.factor(GoT$House)
+GoT$Gender <- as.factor(GoT$Gender)
+GoT$Survives <- as.factor(GoT$Survives)
+GoT[3] <- sapply(GoT[3], as.logical)
+GoT[,5:9] <- sapply(GoT[,5:9], as.logical)
+#GoT[] <- lapply(GoT, levels = c(0, 1), labels = c("NO", "YES"))
+######  List all rules   ########
+GoT_all <- apriori(GoT)
 
-######  List all rules   #########
-GoT_all <- apriori(titanic,parameter=list(support=0,confidence=0));
 
+##### Filter rules #######
+GoT_filtered <- apriori(GoT,
+                        parameter = list(support=0.01, confidence=0.9),
+                        appearance = list(rhs=c("Survives=1"),
+                                          default="lhs"));
 
-#####   Filter out rules #########
-GoT_filtered <- apriori(titanic,parameter=list(support=0.01,confidence=0.9));
-
+##### Removing Redundant Rules #####
+subset.matrix <- is.subset(GoT_filtered,GoT_filtered)
+subset.matrix[lower.tri(subset.matrix,diag=T)] <- NA
+redundant <- colSums(subset.matrix,na.rm=T) >= 1
+GoT_rules <- GoT_filtered[!redundant]
