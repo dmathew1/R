@@ -80,14 +80,17 @@ GoT[,5:9] <- sapply(GoT[,5:9], as.logical)
 
 
 ######  List all rules   ########
-GoT_all <- apriori(GoT,parameter = list(supp=0.1,confidence=0.1))
+GoT_all <- apriori(GoT,
+                   parameter = list(support=0.01, confidence=0.01),
+                   appearance = list(rhs=c("Survives=1","Survives=0"),
+                                     default="lhs"))
 
 
 
 ##### Filter rules  #######
 GoT_filtered <- apriori(GoT,
                         parameter = list(support=0.01, confidence=0.9),
-                        appearance = list(rhs=c("Survives=1"),
+                        appearance = list(rhs=c("Survives=1","Survives=0"),
                                           default="lhs"))
 
 
